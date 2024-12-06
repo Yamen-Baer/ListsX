@@ -9,12 +9,11 @@ class ListApp:
     def __init__(self, root):
         self.root = root
         self.root.title("List Manager - Futuristic UI")
-        self.root.geometry("400x400")
+        self.root.geometry("400x600")
         self.root.resizable(False, False)
 
-        # Set the program icon (optional)
         try:
-            self.root.iconbitmap("program_icon.ico")
+            self.root.iconbitmap("assets/listsX.ico")
         except Exception as e:
             print("Icon not found. Using default icon.")
 
@@ -50,35 +49,63 @@ class ListApp:
         for widget in self.root.winfo_children():
             widget.destroy()
 
+    def display_image(self, image_path):
+        """Load and display an image in the GUI."""
+        try:
+            # Load the image using Pillow
+            image = Image.open(image_path)
+            image = image.resize((150, 150), Image.Resampling.LANCZOS)  # Resize the image
+            photo = ImageTk.PhotoImage(image)
+
+            # Add the image to a label
+            label = tk.Label(self.root, image=photo, bg="#222831")
+            label.image = photo  # Keep a reference to avoid garbage collection
+            label.pack(pady=10)
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not load image: {e}")
+
+    def copyrights(self):
+        copyright_label = ttk.Label(self.root, text="Copyrights © 2024 UD", anchor="center", font=("Helvetica", 9))
+        copyright_label.pack(side="bottom", fill="x", pady=10)
+
     def main_menu_ui(self):
         """Main Menu UI."""
         self.clear_ui()
-        ttk.Label(self.root, text="Main Menu", anchor="center").pack(pady=20)
+
+        self.display_image("assets/listsX.png")
+        ttk.Label(self.root, text="-- Main Menu --", anchor="center").pack(pady=20)
 
         ttk.Button(self.root, text="List Cleaner", command=self.list_cleaner_ui).pack(pady=10)
         ttk.Button(self.root, text="Actions", command=self.actions_ui).pack(pady=10)
         ttk.Button(self.root, text="Exit", command=self.root.quit).pack(pady=20)
+        self.copyrights()
 
     def list_cleaner_ui(self):
         """List Cleaner UI."""
         self.clear_ui()
-        ttk.Label(self.root, text="List Cleaner", anchor="center").pack(pady=20)
+
+        self.display_image("assets/clean.png")
+        ttk.Label(self.root, text="-- List Cleaner --", anchor="center").pack(pady=20)
 
         ttk.Button(self.root, text="Select List To Clear", command=self.select_list_to_clear).pack(pady=10)
         ttk.Button(self.root, text="Select The Base List", command=self.select_base_list).pack(pady=10)
         ttk.Button(self.root, text="Process", command=self.process_lists).pack(pady=20)
 
         ttk.Button(self.root, text="Back", command=self.main_menu_ui).pack(pady=20)
+        self.copyrights()
 
     def actions_ui(self):
         """Actions UI."""
         self.clear_ui()
-        ttk.Label(self.root, text="Actions", anchor="center").pack(pady=20)
+
+        self.display_image("assets/actions.png")
+        ttk.Label(self.root, text="-- Actions --", anchor="center").pack(pady=20)
 
         ttk.Button(self.root, text="Select List", command=self.select_list).pack(pady=10)
         ttk.Button(self.root, text="Shuffle", command=self.shuffle_list).pack(pady=10)
 
         ttk.Button(self.root, text="Back", command=self.main_menu_ui).pack(pady=20)
+        self.copyrights()
 
     def select_list_to_clear(self):
         """Select the 'List to Clear' file."""
