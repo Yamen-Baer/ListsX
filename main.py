@@ -68,6 +68,7 @@ class ListApp:
         copyright_label = ttk.Label(self.root, text="Copyrights © 2024 UD", anchor="center", font=("Helvetica", 9))
         copyright_label.pack(side="bottom", fill="x", pady=10)
 
+
     def main_menu_ui(self):
         """Main Menu UI."""
         self.clear_ui()
