@@ -1,4 +1,4 @@
-# List Manager - Futuristic UI
+# ListsX - List Manager
 
 A Python desktop application for managing text-based lists. The application features a modern, futuristic user interface and provides functionality for cleaning lists and performing actions like shuffling list items. 
 
