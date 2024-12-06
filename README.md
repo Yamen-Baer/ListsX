@@ -77,7 +77,7 @@ Feel free to fork the repository and create pull requests for:
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is Open Source.
 
 ## Acknowledgments
 
