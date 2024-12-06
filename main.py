@@ -2,14 +2,21 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from tkinter import ttk
 from PIL import Image, ImageTk
+import random
 
-class ClearListApp:
+
+class ListApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("ListsX - List Cleaner")
-        self.root.geometry("400x300")
-        self.root.resizable(False, False)  # Disable resizing
-        self.root.iconbitmap("listsX.ico")
+        self.root.title("List Manager - Futuristic UI")
+        self.root.geometry("400x400")
+        self.root.resizable(False, False)
+
+        # Set the program icon (optional)
+        try:
+            self.root.iconbitmap("program_icon.ico")
+        except Exception as e:
+            print("Icon not found. Using default icon.")
 
         # Apply futuristic theme styles
         self.style = ttk.Style()
@@ -22,26 +29,56 @@ class ClearListApp:
             padding=10,
         )
         self.style.map("TButton", background=[("active", "#393e46")])
-
         self.style.configure(
             "TLabel",
             background="#222831",
             foreground="#eeeeee",
             font=("Helvetica", 14),
         )
-
         self.root.configure(bg="#222831")
 
         # Initialize file paths
         self.list_to_clear_path = None
         self.base_list_path = None
+        self.selected_list_path = None
 
-        # UI Components
+        # Initialize Main Menu
+        self.main_menu_ui()
+
+    def clear_ui(self):
+        """Clears all widgets from the current UI."""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
+    def main_menu_ui(self):
+        """Main Menu UI."""
+        self.clear_ui()
+        ttk.Label(self.root, text="Main Menu", anchor="center").pack(pady=20)
+
+        ttk.Button(self.root, text="List Cleaner", command=self.list_cleaner_ui).pack(pady=10)
+        ttk.Button(self.root, text="Actions", command=self.actions_ui).pack(pady=10)
+        ttk.Button(self.root, text="Exit", command=self.root.quit).pack(pady=20)
+
+    def list_cleaner_ui(self):
+        """List Cleaner UI."""
+        self.clear_ui()
         ttk.Label(self.root, text="List Cleaner", anchor="center").pack(pady=20)
 
-        ttk.Button(root, text="Select List To Clear", command=self.select_list_to_clear).pack(pady=10)
-        ttk.Button(root, text="Select The Base List", command=self.select_base_list).pack(pady=10)
-        ttk.Button(root, text="Process", command=self.process_lists).pack(pady=20)
+        ttk.Button(self.root, text="Select List To Clear", command=self.select_list_to_clear).pack(pady=10)
+        ttk.Button(self.root, text="Select The Base List", command=self.select_base_list).pack(pady=10)
+        ttk.Button(self.root, text="Process", command=self.process_lists).pack(pady=20)
+
+        ttk.Button(self.root, text="Back", command=self.main_menu_ui).pack(pady=20)
+
+    def actions_ui(self):
+        """Actions UI."""
+        self.clear_ui()
+        ttk.Label(self.root, text="Actions", anchor="center").pack(pady=20)
+
+        ttk.Button(self.root, text="Select List", command=self.select_list).pack(pady=10)
+        ttk.Button(self.root, text="Shuffle", command=self.shuffle_list).pack(pady=10)
+
+        ttk.Button(self.root, text="Back", command=self.main_menu_ui).pack(pady=20)
 
     def select_list_to_clear(self):
         """Select the 'List to Clear' file."""
@@ -75,18 +112,69 @@ class ClearListApp:
             # Remove items from List to Clear that are in Base List
             clear_list = list_to_clear - base_list
 
-            # Write the results to Clear_List.txt
-            output_file = "Clear_List.txt"
+            # Ask user to select save path
+            output_file = filedialog.asksaveasfilename(
+                title="Save Cleaned List As",
+                defaultextension=".txt",
+                filetypes=[("Text Files", "*.txt")],
+            )
+            if not output_file:
+                return  # User cancelled save dialog
+
+            # Write the results
             with open(output_file, 'w') as output:
                 output.write("\n".join(sorted(clear_list)))
 
-            messagebox.showinfo("Success", f"Clear_List.txt has been created successfully!")
+            messagebox.showinfo("Success", f"File saved as:\n{output_file}")
+
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def select_list(self):
+        """Select a list file for the Actions UI."""
+        self.selected_list_path = filedialog.askopenfilename(title="Select List (TXT)", filetypes=[("Text Files", "*.txt")])
+        if self.selected_list_path:
+            messagebox.showinfo("File Selected", f"List file selected:\n{self.selected_list_path}")
+        else:
+            messagebox.showwarning("No File Selected", "Please select a valid file.")
+
+    def shuffle_list(self):
+        """Shuffle the selected list and save the result."""
+        try:
+            if not self.selected_list_path:
+                raise ValueError("Please select a list before shuffling.")
+
+            # Read the file
+            with open(self.selected_list_path, 'r') as file:
+                items = [line.strip() for line in file]
+
+            if not items:
+                raise ValueError("The selected list is empty.")
+
+            # Shuffle the list
+            random.shuffle(items)  # This randomizes the order of lines in the list
+
+            # Ask user to select save path
+            output_file = filedialog.asksaveasfilename(
+                title="Save Shuffled List As",
+                defaultextension=".txt",
+                filetypes=[("Text Files", "*.txt")],
+            )
+            if not output_file:
+                return  # User cancelled save dialog
+
+            # Write the shuffled list
+            with open(output_file, 'w') as output:
+                output.write("\n".join(items))
+
+            messagebox.showinfo("Success", f"File saved as:\n{output_file}")
 
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
 
+
 if __name__ == "__main__":
     root = tk.Tk()
-    app = ClearListApp(root)
+    app = ListApp(root)
     root.mainloop()
