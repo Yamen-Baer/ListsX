@@ -45,6 +45,9 @@ From the Main Menu, choose:
 ### Actions
 1. Select the list file using the **Select List** button.
 2. Click **Shuffle** to randomize the order of the list items, and choose where to save the shuffled file.
+3. Click **Sort** to arrange the list items in alphabetical order, and choose where to save the sorted file.
+4. Click **Reverse** to reverse the order of the list items, and choose where to save the reversed file.
+5. Click **Remove Duplicates** to remove duplicate entries from the list, and choose where to save the cleaned file.
 
 ## Requirements
 
