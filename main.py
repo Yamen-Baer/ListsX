@@ -48,6 +48,7 @@ class ListApp:
         """Clears all widgets from the current UI."""
         for widget in self.root.winfo_children():
             widget.destroy()
+        self.copyrights()
 
     def display_image(self, image_path):
         """Load and display an image in the GUI."""
@@ -79,7 +80,6 @@ class ListApp:
         ttk.Button(self.root, text="List Cleaner", command=self.list_cleaner_ui).pack(pady=10)
         ttk.Button(self.root, text="Actions", command=self.actions_ui).pack(pady=10)
         ttk.Button(self.root, text="Exit", command=self.root.quit).pack(pady=20)
-        self.copyrights()
 
     def list_cleaner_ui(self):
         """List Cleaner UI."""
@@ -88,25 +88,27 @@ class ListApp:
         self.display_image("assets/clean.png")
         ttk.Label(self.root, text="-- List Cleaner --", anchor="center").pack(pady=20)
 
-        ttk.Button(self.root, text="Select List To Clear", command=self.select_list_to_clear).pack(pady=10)
-        ttk.Button(self.root, text="Select The Base List", command=self.select_base_list).pack(pady=10)
+        ttk.Button(self.root, text="Select List To Clear", width=20, command=self.select_list_to_clear).pack(pady=10)
+        ttk.Button(self.root, text="Select The Base List", width=20, command=self.select_base_list).pack(pady=10)
         ttk.Button(self.root, text="Process", command=self.process_lists).pack(pady=20)
 
         ttk.Button(self.root, text="Back", command=self.main_menu_ui).pack(pady=20)
-        self.copyrights()
 
     def actions_ui(self):
-        """Actions UI."""
         self.clear_ui()
-
         self.display_image("assets/actions.png")
         ttk.Label(self.root, text="-- Actions --", anchor="center").pack(pady=20)
+        ttk.Button(self.root, text="Select List", width=31, command=self.select_list).pack(pady=10)
 
-        ttk.Button(self.root, text="Select List", command=self.select_list).pack(pady=10)
-        ttk.Button(self.root, text="Shuffle", command=self.shuffle_list).pack(pady=10)
+        actions_frame = tk.Frame(self.root, bg="#222831")
+        actions_frame.pack(pady=10)
+
+        ttk.Button(actions_frame, text="Shuffle", width=13 , command=self.shuffle_list).grid(row=1, column=0, padx=10, pady=10)
+        ttk.Button(actions_frame, text="Sort", width=13 ,command=self.sort_list).grid(row=1, column=1, padx=10, pady=10)
+        ttk.Button(actions_frame, text="Reverse", width=13 ,command=self.reverse_list).grid(row=2, column=0, padx=10, pady=10)
+        ttk.Button(actions_frame, text="RV Duplicates", width=13 ,command=self.remove_duplicates).grid(row=2, column=1, padx=10, pady=10)
 
         ttk.Button(self.root, text="Back", command=self.main_menu_ui).pack(pady=20)
-        self.copyrights()
 
     def select_list_to_clear(self):
         """Select the 'List to Clear' file."""
@@ -158,8 +160,8 @@ class ListApp:
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
+
     def select_list(self):
-        """Select a list file for the Actions UI."""
         self.selected_list_path = filedialog.askopenfilename(title="Select List (TXT)", filetypes=[("Text Files", "*.txt")])
         if self.selected_list_path:
             messagebox.showinfo("File Selected", f"List file selected:\n{self.selected_list_path}")
@@ -167,31 +169,45 @@ class ListApp:
             messagebox.showwarning("No File Selected", "Please select a valid file.")
 
     def shuffle_list(self):
-        """Shuffle the selected list and save the result."""
+        self.modify_list("shuffle")
+
+    def sort_list(self):
+        self.modify_list("sort")
+
+    def reverse_list(self):
+        self.modify_list("reverse")
+
+    def remove_duplicates(self):
+        self.modify_list("remove_duplicates")
+
+    def modify_list(self, action):
         try:
             if not self.selected_list_path:
-                raise ValueError("Please select a list before shuffling.")
+                raise ValueError("Please select a list before performing any actions.")
 
-            # Read the file
             with open(self.selected_list_path, 'r') as file:
                 items = [line.strip() for line in file]
 
             if not items:
                 raise ValueError("The selected list is empty.")
 
-            # Shuffle the list
-            random.shuffle(items)  # This randomizes the order of lines in the list
+            if action == "shuffle":
+                random.shuffle(items)
+            elif action == "sort":
+                items.sort()
+            elif action == "reverse":
+                items.reverse()
+            elif action == "remove_duplicates":
+                items = list(dict.fromkeys(items))
 
-            # Ask user to select save path
             output_file = filedialog.asksaveasfilename(
-                title="Save Shuffled List As",
-                defaultextension=".txt",
-                filetypes=[("Text Files", "*.txt")],
+                title="Save Modified List As", 
+                defaultextension=".txt", 
+                filetypes=[("Text Files", "*.txt")]
             )
             if not output_file:
-                return  # User cancelled save dialog
+                return
 
-            # Write the shuffled list
             with open(output_file, 'w') as output:
                 output.write("\n".join(items))
 
